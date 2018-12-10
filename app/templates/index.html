@@ -1,47 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
     <title>{{ title }} - Testing</title>
 </head>
 <body>
     <div>
         Temp:
         <a href="{{ url_for('index') }}">Home</a>
-        <a href="{{ url_for('list') }}">List</a>
+        <a href="{{ url_for('popup') }}">Popup</a>
     </div>
 
-    <div>
+    <div id="titles">
         {% for entry in entries %}
             <h3>{{ entry.title }}</h3>
         {% endfor %}
+        <span class="popup-tag" id="myPopup"></span>
     </div>
 
-    <button onclick="document.getElementById('temp').innerHTML = findDefinition()">
-        Click to display definition
-    </button>
-
-    <p id="temp"></p>
-
-    <script>
-        function getSelectionText() {
-            var text = "";
-            if (window.getSelection) {
-                text = window.getSelection().toString();
-            } else if (document.selection && document.selection.type != "Control") {
-                text = document.selection.createRange().text;
-            }
-            return text;
-        }
-
-        function findDefinition() {
-            var list = document.getElementsByTagName("h3");
-            for (i = 0; i < list.length; i++) {
-                if (getSelectionText() == list[i].innerHTML) {
-                    return getSelectionText();
-                }
-            }
-            return "No definition available";
-        }
-    </script>
+    <script src="{{ url_for('static', filename='javascript/main.js') }}"></script>
 </body>
 </html>

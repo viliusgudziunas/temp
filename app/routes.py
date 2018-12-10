@@ -7,7 +7,6 @@ def index():
     entries = Entry.query.all()
     return render_template("index.html", title="Temp", entries=entries)
 
-@app.route("/list")
-def list():
-    entries = Entry.query.all()
-    return render_template("list.html", title="List", entries=entries)
+@app.route("/popup")
+def popup():
+    return render_template("popup.html", title="Popup")
