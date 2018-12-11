@@ -1,62 +1,90 @@
-var titles = document.getElementById("titles");
-var popup = document.getElementById("myPopup");
+var modal = document.getElementById("myModal");
+var span = document.getElementsByClassName("close")[0];
+var terms = document.getElementById("terms");
+var definition = document.getElementById("modal-body");
+var btn = document.getElementById("closeButton");
 
-// titles.addEventListener("mouseup", function() {
-//     var request = new XMLHttpRequest();
-//     var data;
+terms.addEventListener("mouseup", function() {
+    var request = new XMLHttpRequest();
+    var data;
 
-//     request.open("GET", "../static/main.json");
-//     request.onload = function() {
-//         data = JSON.parse(request.responseText);
-//         renderHTML(data);
-//     };
-//     request.send();
-// });
-
-// function renderHTML(data) {
-//     var selection = getSelected();
-//     var htmlString = "<p>No definition available</p>";
-
-//     for (i = 0; i < data.length; i++) {
-//         if (selection == data[i].term) {
-//             htmlString = "<p>" + data[i].definition + "</p>"
-//         };
-//     };
-//     popup.innerHTML = htmlString;
-//     popup.classList.toggle("show");
-// };
-
-function getSelected() {
-    var selection;
-
-    if (window.getSelection) {
-        return window.getSelection();
-    } else if (document.selection) {
-        return document.selection.createRange();
-    } else {
-        selection = document.selection && document.selection.createRange();
-        if (selection.text) {
-            return selection.text;
-        };
-        return false;
+    request.open("GET", "../static/main.json");
+    request.onload = function() {
+        data = JSON.parse(request.responseText);
+        renderHTML(data);
     };
-    return false;
+    request.send();
+});
+
+function renderHTML(data) {
+    var selection = getSelected();
+    var htmlString;
+    var array;
+
+    if (selection != "") {
+        htmlString = findExact(selection, data);
+        array = findArray(selection, data);
+
+        if (array === undefined || array.length == 0) {
+            definition.innerHTML = htmlString;
+            setTimeout(openModal, 1000);
+        } else if (htmlString == "<p>No definition available</p>") {
+            definition.innerHTML = "";
+            for (i = 0; i < array.length; i++){
+                definition.innerHTML += "<p>" + array[i] + "<br></p>";
+            }
+            setTimeout(openModal, 1000);
+        } else {
+            definition.innerHTML = htmlString;
+            setTimeout(openModal, 1000);
+        };        
+    };
 };
 
-// Create sniffer
-$(document).ready(function() {
-    var selection;
+function findExact(selection, data) {
+    var htmlString = "<p>No definition available</p>";
 
-    $("#titles").mouseup(function(event) {
-        selection = getSelected();
-        selection = $.trim(selection);
-        if (selection != "") {
-            $("span.popup-tag").css("display", "block");
-            $("span.popup-tag").css("top", event.clientY);
-            $("span.popup-tag").css("left", event.clientX);
-            $("span.popup-tag").text(selection);
-        } else {
-            $("span.popup-tag").css("display", "none");
+    for (i = 0; i < data.length; i++) {
+        if (selection == data[i].term) {
+            htmlString = "<p>" + data[i].definition + "</p>"
         };
-    });
-});
+    };
+    return htmlString;
+};
+
+function findArray(selection, data) {
+    var array = [];
+
+    for (i = 0; i < data.length; i++) {
+        if (data[i].term.includes(selection)) {
+            array.push(data[i].term);
+        };
+    };
+    return array;
+};
+
+function getSelected() {
+    if (window.getSelection) {
+        return window.getSelection().toString();
+    } else if (document.selection && document.selection.type != "Control") {
+        return document.selection.createRange().text();
+    };
+};
+
+function openModal() {
+    modal.style.display = "block";
+};
+
+span.onclick = function() {
+    modal.style.display = "none";
+};
+
+btn.onclick = function() {
+    modal.style.display = "none";
+};
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    };
+};

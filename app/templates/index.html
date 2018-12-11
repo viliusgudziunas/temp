@@ -2,22 +2,25 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
     <title>{{ title }} - Testing</title>
 </head>
-<body>
+<body id="body">
     <div>
         Temp:
         <a href="{{ url_for('index') }}">Home</a>
         <a href="{{ url_for('popup') }}">Popup</a>
     </div>
 
-    <div id="titles">
+    <div id="terms">
         {% for entry in entries %}
             <h3>{{ entry.title }}</h3>
         {% endfor %}
-        <span class="popup-tag" id="myPopup"></span>
+        <p>Random</p>
     </div>
+
+    {% include "_modal.html" %}
 
     <script src="{{ url_for('static', filename='javascript/main.js') }}"></script>
 </body>
