@@ -28,10 +28,10 @@ function renderHTML(data) {
         if (array === undefined || array.length == 0) {
             definition.innerHTML = htmlString;
             setTimeout(openModal, 1000);
-        } else if (htmlString == "<p>No definition available</p>") {
-            definition.innerHTML = "";
+        } else if (htmlString == "<h4 class='definition'>No definition available</h4>") {
+            definition.innerHTML = "<h4 class='definition'>Which definition are you looking for?</h4>";
             for (i = 0; i < array.length; i++){
-                definition.innerHTML += "<p>" + array[i] + "<br></p>";
+                definition.innerHTML += "<button class='accordion'>" + array[i].term + "</button><div class='panel'><p>" + array[i].definition + "</p></div>";
             }
             setTimeout(openModal, 1000);
         } else {
@@ -42,11 +42,11 @@ function renderHTML(data) {
 };
 
 function findExact(selection, data) {
-    var htmlString = "<p>No definition available</p>";
+    var htmlString = "<h4 class='definition'>No definition available</h4>";
 
     for (i = 0; i < data.length; i++) {
         if (selection == data[i].term) {
-            htmlString = "<p>" + data[i].definition + "</p>"
+            htmlString = "<button class='accordion'>" + data[i].term + "</button><div class='panel'><p>" + data[i].definition + "</p></div>"
         };
     };
     return htmlString;
@@ -57,7 +57,11 @@ function findArray(selection, data) {
 
     for (i = 0; i < data.length; i++) {
         if (data[i].term.includes(selection)) {
-            array.push(data[i].term);
+            var entry = {
+                term: data[i].term,
+                definition: data[i].definition
+            }
+            array.push(entry);
         };
     };
     return array;
@@ -73,6 +77,21 @@ function getSelected() {
 
 function openModal() {
     modal.style.display = "block";
+    
+    var acc = document.getElementsByClassName("accordion");
+    
+    for (i = 0; i < acc.length; i++) {
+        var acc = document.getElementsByClassName("accordion");
+        acc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.maxHeight) {
+                panel.style.maxHeight = null;
+            } else {
+                panel.style.maxHeight = panel.scrollHeight + "px";
+            };
+        });
+    };
 };
 
 span.onclick = function() {
