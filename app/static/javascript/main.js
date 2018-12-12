@@ -46,7 +46,7 @@ function findExact(selection, data) {
 
     for (i = 0; i < data.length; i++) {
         if (selection == data[i].term) {
-            htmlString = "<button class='accordion'>" + data[i].term + "</button><div class='panel'><p>" + data[i].definition + "</p></div>"
+            htmlString = "<button class='accordion'>" + data[i].term + "</button><div class='panel' style='max-height: 100%'><p>" + data[i].definition + "</p></div>"
         };
     };
     return htmlString;
