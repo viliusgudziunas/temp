@@ -3,6 +3,7 @@ var span = document.getElementsByClassName("close")[0];
 var terms = document.getElementById("terms");
 var definition = document.getElementById("modal-body");
 var btn = document.getElementById("closeButton");
+var smallWords = ["of", "the", "by", "is", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "are", "be", "to", "for", "that", "and", "an", "in", "does", "do", "did", "didn't", "not", "can", "can't", "if", "it", "or", "so"];
 
 terms.addEventListener("mouseup", function() {
     var request = new XMLHttpRequest();
@@ -22,30 +23,32 @@ function renderHTML(data) {
     var array;
 
     if (selection != "") {
-        htmlString = findExact(selection, data);
-        array = findArray(selection, data);
+        if (selection != "Small Word") {
+            htmlString = findExact(selection, data);
+            array = findArray(selection, data);
+        };
 
-        if (array === undefined || array.length == 0) {
-            definition.innerHTML = htmlString;
-            setTimeout(openModal, 1000);
+        if (array === undefined || array.length == 0 || selection == "Small Word") {
+            definition.innerHTML = "<h4 class='definition'>No definition available</h4>";
+            setTimeout(openModal, 1500);
         } else if (htmlString == "<h4 class='definition'>No definition available</h4>") {
             definition.innerHTML = "<h4 class='definition'>Which definition are you looking for?</h4>";
             for (i = 0; i < array.length; i++){
                 definition.innerHTML += "<button class='accordion'>" + array[i].term + "</button><div class='panel'><p>" + array[i].definition + "</p></div>";
             }
-            setTimeout(openModal, 1000);
+            setTimeout(openModal, 1500);
         } else {
             definition.innerHTML = htmlString;
-            setTimeout(openModal, 1000);
+            setTimeout(openModal, 1500);
         };        
     };
 };
 
 function findExact(selection, data) {
-    var htmlString = "<h4 class='definition'>No definition available</h4>";
+    var htmlString = "<h4 class='definition'>No definition available</h4>"
 
     for (i = 0; i < data.length; i++) {
-        if (selection == data[i].term) {
+        if (selection == data[i].term.toLowerCase()) {
             htmlString = "<button class='accordion'>" + data[i].term + "</button><div class='panel' style='max-height: 100%'><p>" + data[i].definition + "</p></div>"
         };
     };
@@ -54,14 +57,34 @@ function findExact(selection, data) {
 
 function findArray(selection, data) {
     var array = [];
+    var selectionArray = selection.replace(/\n/g, " ").trim().split(" ").filter(function(item, i, ar) {
+        return ar.indexOf(item) === i;
+    });
+
+    for (i = 0; i < selectionArray.length; i++) {
+        if (checkSmallWords(selectionArray[i])) {
+            var isSmallWord = true;
+            selectionArray.splice(i, 1);
+            while (isSmallWord && selectionArray[i + 1]) {
+                if (checkSmallWords(selectionArray[i])) {
+                    selectionArray.splice(i, 1);
+                } else {
+                    isSmallWord = false;
+                };
+            };
+        };
+    };
 
     for (i = 0; i < data.length; i++) {
-        if (data[i].term.includes(selection)) {
-            var entry = {
-                term: data[i].term,
-                definition: data[i].definition
-            }
-            array.push(entry);
+        for (j = 0; j < selectionArray.length; j++) {
+            if (data[i].term.toLowerCase().includes(selectionArray[j])) {
+                var entry = {
+                    term: data[i].term,
+                    definition: data[i].definition
+                };
+                array.push(entry);
+                break;
+            };
         };
     };
     return array;
@@ -69,10 +92,22 @@ function findArray(selection, data) {
 
 function getSelected() {
     if (window.getSelection) {
-        return window.getSelection().toString();
+        if (checkSmallWords(window.getSelection().toString().toLowerCase())) {
+            return "Small Word";
+        } else {
+            return window.getSelection().toString().toLowerCase();
+        };
     } else if (document.selection && document.selection.type != "Control") {
-        return document.selection.createRange().text();
+        if (checkSmallWords(document.selection.createRange().text().toLowerCase())) {
+            return "Small Word";
+        } else {
+            return document.selection.createRange().text().toLowerCase();
+        };
     };
+};
+
+function checkSmallWords(input) {
+    return smallWords.indexOf(input.trim()) != -1;
 };
 
 function openModal() {
