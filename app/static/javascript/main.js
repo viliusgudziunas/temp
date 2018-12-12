@@ -76,21 +76,22 @@ function getSelected() {
 };
 
 function openModal() {
-    modal.style.display = "block";
-    
-    var acc = document.getElementsByClassName("accordion");
-    
-    for (i = 0; i < acc.length; i++) {
+    if (getSelected()) {
+        modal.style.display = "block";
         var acc = document.getElementsByClassName("accordion");
-        acc[i].addEventListener("click", function() {
-            this.classList.toggle("active");
-            var panel = this.nextElementSibling;
-            if (panel.style.maxHeight) {
-                panel.style.maxHeight = null;
-            } else {
-                panel.style.maxHeight = panel.scrollHeight + "px";
-            };
-        });
+    
+        for (i = 0; i < acc.length; i++) {
+            var acc = document.getElementsByClassName("accordion");
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                };
+            });
+        };
     };
 };
 
